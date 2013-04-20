@@ -19,8 +19,8 @@
 
 
 return {
-    doc: RactiveCouchDoc,
-    view: RactiveCouchView
+    Doc: RactiveCouchDoc,
+    View: RactiveCouchView
 };
 
 

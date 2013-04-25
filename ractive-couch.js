@@ -80,9 +80,7 @@ function RactiveCouchView(db_url, view_name, options) {
         throw Error('view name needs to be either "ddoc/viewname" or "_design/ddoc/_view/viewname"');
     }
 
-    var get_options = {
-        include_docs: options.include_docs
-    };
+    var get_options = options.view_options || {};
 
     var findIndex = function(change) {
         for (var i=0; i < rows.length; i++) {
@@ -97,6 +95,8 @@ function RactiveCouchView(db_url, view_name, options) {
     };
 
     var added = function(change) {
+        if (!options.watch_added) return;
+
         if (options.include_docs) {
             rows.push(change);
         } else {
@@ -145,15 +145,16 @@ function RactiveCouchView(db_url, view_name, options) {
     });
 
 
-
-    // changes feed2 for deletes
-    var feed2 = couchr.changes(db_url);
-    feed2.on('change', function (change) {
-        if (change.deleted) onChange(change);
-    });
-    feed2.on('error', function (err) {
-        console.log(err);
-    });
+    if (options.watch_deletes) {
+        // changes feed2 for deletes
+        var feed2 = couchr.changes(db_url);
+        feed2.on('change', function (change) {
+            if (change.deleted) onChange(change);
+        });
+        feed2.on('error', function (err) {
+            console.log(err);
+        });
+    }
 
 
 

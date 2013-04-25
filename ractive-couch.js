@@ -85,6 +85,11 @@ function RactiveCouchView(db_url, view_name, options) {
     var findIndex = function(change) {
         for (var i=0; i < rows.length; i++) {
             var row = rows[i];
+
+            // use supplied isSame function to determine if row and change are equal
+            if (options.isSame && options.isSame(row, change) ) return i;
+
+            // falback to comparing id's
             if (row.id === change.id) return i;
         }
         return null;

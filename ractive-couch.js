@@ -87,7 +87,7 @@ function RactiveCouchView(db_url, view_name, options) {
             var row = rows[i];
 
             // use supplied isSame function to determine if row and change are equal
-            if (options.isSame && options.isSame(row, change) ) return i;
+            if (options.is_same && options.is_same(row, change) ) return i;
 
             // falback to comparing id's
             if (row.id === change.id) return i;
@@ -102,28 +102,36 @@ function RactiveCouchView(db_url, view_name, options) {
     var added = function(change) {
         if (!options.watch_added) return;
 
-        if (options.include_docs) {
-            rows.push(change);
-        } else {
-            var doc_url = [db_url, '/', change.id].join('/');
-            couchr.get(doc_url, function(err, doc) {
-                if (err) return console.log(err);
-                rows.push({doc: doc});
-            });
+        if (options.map_change) {
+            return rows.push(options.map_change(change));
         }
+
+        if (options.include_docs) {
+            return rows.push(change);
+        }
+        var doc_url = [db_url, '/', change.id].join('/');
+        couchr.get(doc_url, function(err, doc) {
+            if (err) return console.log(err);
+            rows.push({doc: doc});
+        });
+
     };
 
     var modified = function(change, index) {
-        if (options.include_docs) {
-            view.set('rows['+ index+']', change);
-        } else {
-            var doc_url = [db_url, '/', change.id].join('/');
-            couchr.get(doc_url, function(err, doc) {
-                if (err) return console.log(err);
 
-                view.set('rows['+ index+']', {doc: doc});
-            });
+        if (options.map_change) {
+            return view.set('rows['+ index+']', options.map_change(change));
         }
+        if (options.include_docs) {
+            return view.set('rows['+ index+']', change);
+        }
+        var doc_url = [db_url, '/', change.id].join('/');
+        couchr.get(doc_url, function(err, doc) {
+            if (err) return console.log(err);
+
+            view.set('rows['+ index+']', {doc: doc});
+        });
+
     };
 
     var onChange = function(change) {

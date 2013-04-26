@@ -67,7 +67,8 @@ function RactiveCouchDoc(db_url, doc_id, options) {
 function RactiveCouchView(db_url, view_name, options) {
     var view_short_name,
         view_long_name,
-        view;
+        view,
+        rows;
 
     var view_parts = view_name.split('/');
     if (view_parts.length === 2) {
@@ -83,6 +84,8 @@ function RactiveCouchView(db_url, view_name, options) {
     var get_options = options.view_options || {};
 
     var findIndex = function(change) {
+        if (!rows) rows = [];
+
         for (var i=0; i < rows.length; i++) {
             var row = rows[i];
 

@@ -75,6 +75,7 @@ Template a view, and show create/updates/deletes to the view
   - **options** for both Ractive and Couchr
      - **el** the element id do bind the template to
      - **template** the template to use
+     - **no_change_filter** a boolean. false means watch ALL changes on the db. true (default) uses the view as a filter.
      - **include_docs** to use include docs for the updates/delete changes feed.
      - **watch_added** watch changes feed for new docs. Currently this does not check startkey, key, or endkey that the doc actually matches, so use witch caution, and filter.
      - **watch_deletes** add another change feed to watch for deletes.
